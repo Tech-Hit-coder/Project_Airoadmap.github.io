@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Engineer Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0f1117;--bg2:#181b26;--bg3:#1e2235;--bg4:#252840;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#eceef5;--muted:#8890b0;--dim:#4a5070;
+  --green:#58cc02;--green2:#46a302;--green-bg:rgba(88,204,2,.12);
+  --blue:#1cb0f6;--blue-bg:rgba(28,176,246,.1);
+  --purple:#ce82ff;--purple-bg:rgba(206,130,255,.1);
+  --orange:#ff9600;--orange-bg:rgba(255,150,0,.1);
+  --red:#ff4b4b;--red-bg:rgba(255,75,75,.1);
+  --yellow:#ffd900;--yellow-bg:rgba(255,217,0,.1);
+  --pink:#ff70d4;--pink-bg:rgba(255,112,212,.1);
+  --teal:#00d4aa;--teal-bg:rgba(0,212,170,.1);
+  --radius:16px;--radius-sm:10px;--radius-xs:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ===== SCREENS ===== */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+
+/* ===== ONBOARDING ===== */
+#screen-onboard{background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.onboard-logo{font-size:72px;margin-bottom:16px;animation:bounce 1.5s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.onboard-title{font-size:clamp(28px,5vw,44px);font-weight:900;line-height:1.1;margin-bottom:12px;}
+.onboard-title span{color:var(--green);}
+.onboard-sub{font-size:16px;color:var(--muted);max-width:420px;line-height:1.6;margin-bottom:36px;}
+.onboard-form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px;}
+.inp{background:var(--bg2);border:2px solid var(--border2);border-radius:var(--radius-sm);padding:14px 18px;font-size:15px;font-family:'Nunito',sans-serif;color:var(--text);width:100%;outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--green);}
+.inp::placeholder{color:var(--dim);}
+.btn-green{background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);padding:15px 32px;font-size:16px;font-weight:800;cursor:pointer;width:100%;font-family:'Nunito',sans-serif;transition:background .15s,transform .1s;letter-spacing:.02em;}
+.btn-green:hover{background:var(--green2);}
+.btn-green:active{transform:scale(.97);}
+.btn-ghost{background:transparent;color:var(--muted);border:2px solid var(--border2);border-radius:var(--radius-sm);padding:13px 32px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:'Nunito',sans-serif;transition:border-color .2s;}
+.btn-ghost:hover{border-color:var(--muted);}
+
+/* ===== MAIN LAYOUT ===== */
+#screen-main{display:flex;flex-direction:column;min-height:100vh;}
+.topbar{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.topbar-logo{font-size:22px;font-weight:900;color:var(--green);display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.topbar-logo span{font-size:24px;}
+.topbar-stats{display:flex;align-items:center;gap:20px;}
+.stat-pill{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;}
+.stat-pill .icon{font-size:18px;}
+.streak-num{color:var(--orange);}
+.xp-num{color:var(--purple);}
+.hearts{color:var(--red);}
+
+.main-body{display:grid;grid-template-columns:280px 1fr;flex:1;max-width:1100px;margin:0 auto;width:100%;gap:0;}
+@media(max-width:750px){.main-body{grid-template-columns:1fr;}}
+
+/* ===== SIDEBAR ===== */
+.sidebar{padding:24px 16px;border-right:1px solid var(--border);position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;}
+@media(max-width:750px){.sidebar{display:none;}}
+.sidebar-user{background:var(--bg2);border-radius:var(--radius);padding:16px;margin-bottom:20px;border:1px solid var(--border);}
+.user-name{font-size:15px;font-weight:800;margin-bottom:4px;}
+.user-email{font-size:12px;color:var(--muted);}
+.xp-bar-wrap{margin-top:10px;}
+.xp-bar-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between;}
+.xp-bar{height:8px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:99px;transition:width .5s ease;}
+
+.level-list{display:flex;flex-direction:column;gap:4px;}
+.level-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;text-align:left;width:100%;transition:background .15s,color .15s;position:relative;}
+.level-btn:hover{background:var(--bg2);color:var(--text);}
+.level-btn.active{background:var(--bg3);color:var(--text);}
+.level-btn .lb-icon{font-size:18px;width:28px;flex-shrink:0;text-align:center;}
+.level-btn .lb-name{flex:1;line-height:1.3;}
+.level-btn .lb-badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;white-space:nowrap;}
+.badge-done{background:var(--green-bg);color:var(--green);}
+.badge-lock{background:var(--bg3);color:var(--dim);}
+.badge-pct{background:var(--orange-bg);color:var(--orange);}
+
+/* ===== CONTENT AREA ===== */
+.content{padding:28px 28px 60px;}
+@media(max-width:600px){.content{padding:20px 16px 60px;}}
+
+/* ===== LEVEL HEADER ===== */
+.level-header-card{border-radius:var(--radius);padding:24px 28px;margin-bottom:28px;position:relative;overflow:hidden;}
+.level-header-card::before{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;opacity:.15;background:currentColor;}
+.lh-tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;opacity:.8;}
+.lh-title{font-size:26px;font-weight:900;line-height:1.15;margin-bottom:6px;}
+.lh-desc{font-size:14px;opacity:.8;line-height:1.55;max-width:520px;}
+.lh-meta{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;}
+.lh-chip{font-size:12px;font-weight:700;padding:4px 12px;border-radius:99px;background:rgba(0,0,0,.2);}
+.progress-row{display:flex;align-items:center;gap:12px;margin-top:16px;}
+.prog-bar{flex:1;height:10px;background:rgba(0,0,0,.25);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:rgba(255,255,255,.9);border-radius:99px;transition:width .6s ease;}
+.prog-label{font-size:13px;font-weight:800;min-width:40px;}
+
+/* ===== TOPIC CARDS ===== */
+.topics-section{margin-bottom:28px;}
+.section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.topic-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:border-color .2s;}
+.topic-card:hover{border-color:var(--border2);}
+.topic-card.done{border-color:rgba(88,204,2,.25);}
+.topic-card.done .tc-header{background:rgba(88,204,2,.05);}
+.tc-header{padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;}
+.tc-check{width:28px;height:28px;border-radius:50%;border:2.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:14px;}
+.tc-check.checked{background:var(--green);border-color:var(--green);color:#fff;}
+.tc-info{flex:1;}
+.tc-name{font-size:15px;font-weight:800;margin-bottom:2px;}
+.tc-why{font-size:12px;color:var(--muted);line-height:1.4;}
+.tc-xp{font-size:12px;font-weight:800;color:var(--purple);background:var(--purple-bg);padding:4px 10px;border-radius:99px;white-space:nowrap;}
+.tc-expand{font-size:18px;color:var(--muted);transition:transform .3s;cursor:pointer;padding:4px;}
+.topic-card.open .tc-expand{transform:rotate(180deg);}
+
+.tc-body{display:none;border-top:1px solid var(--border);padding:18px;}
+.topic-card.open .tc-body{display:block;}
+
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+@media(max-width:520px){.res-grid{grid-template-columns:1fr;}}
+.res-link{display:flex;align-items:flex-start;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;text-decoration:none;transition:border-color .15s,background .15s;}
+.res-link:hover{border-color:var(--border2);background:var(--bg4);}
+.res-badge{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.rb-free{background:var(--green-bg);color:var(--green);}
+.rb-paid{background:var(--yellow-bg);color:var(--yellow);}
+.rb-book{background:var(--purple-bg);color:var(--purple);}
+.rb-yt{background:var(--red-bg);color:var(--red);}
+.rb-doc{background:var(--blue-bg);color:var(--blue);}
+.res-text{flex:1;}
+.res-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:2px;}
+.res-plat{font-size:11px;color:var(--muted);}
+
+.task-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);padding:13px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .15s,transform .1s;margin-top:4px;}
+.task-btn:hover{background:var(--green2);}
+.task-btn:active{transform:scale(.98);}
+.task-btn.done-btn{background:var(--bg3);color:var(--green);border:2px solid rgba(88,204,2,.3);}
+.task-btn.done-btn:hover{background:var(--green-bg);}
+
+/* ===== PROJECT BOX ===== */
+.project-box{background:var(--purple-bg);border:1px solid rgba(206,130,255,.2);border-radius:var(--radius);padding:18px 20px;margin-bottom:28px;display:flex;gap:14px;align-items:flex-start;}
+.project-icon{font-size:28px;flex-shrink:0;}
+.project-info .project-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--purple);margin-bottom:6px;}
+.project-info .project-title{font-size:14px;font-weight:700;line-height:1.55;color:var(--text);}
+
+/* ===== STREAK REMINDER BOX ===== */
+.email-box{background:var(--orange-bg);border:1px solid rgba(255,150,0,.2);border-radius:var(--radius);padding:18px 20px;margin-bottom:28px;}
+.email-box-title{font-size:14px;font-weight:800;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.email-row{display:flex;gap:10px;}
+.email-inp{flex:1;background:var(--bg2);border:2px solid var(--border2);border-radius:var(--radius-sm);padding:11px 14px;font-size:14px;font-family:'Nunito',sans-serif;color:var(--text);outline:none;}
+.email-inp:focus{border-color:var(--orange);}
+.btn-orange{background:var(--orange);color:#fff;border:none;border-radius:var(--radius-sm);padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;transition:opacity .15s;}
+.btn-orange:hover{opacity:.85;}
+.email-note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;}
+
+/* ===== CELEBRATION MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;display:none;align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--bg2);border:2px solid var(--border2);border-radius:24px;padding:36px 32px;max-width:400px;width:100%;text-align:center;animation:popIn .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.modal-emoji{font-size:72px;margin-bottom:16px;display:block;animation:bounce 1s ease-in-out infinite;}
+.modal-title{font-size:26px;font-weight:900;margin-bottom:8px;}
+.modal-sub{font-size:15px;color:var(--muted);line-height:1.55;margin-bottom:24px;}
+.modal-xp{font-size:22px;font-weight:900;color:var(--purple);margin-bottom:20px;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:998;}
+
+/* ===== MOBILE NAV ===== */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:8px 0 12px;z-index:100;}
+@media(max-width:750px){.mobile-nav{display:flex;justify-content:space-around;}}
+.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;padding:4px 12px;border:none;background:none;font-family:'Nunito',sans-serif;}
+.mobile-nav-btn.active{color:var(--green);}
+.mobile-nav-btn .mnb-icon{font-size:22px;}
+
+/* ===== LEVEL SELECT MOBILE ===== */
+#screen-level-select{padding:24px 20px 80px;}
+.level-select-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+.lsel-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);padding:18px 16px;cursor:pointer;text-align:center;transition:border-color .2s,transform .15s;}
+.lsel-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.lsel-icon{font-size:32px;margin-bottom:8px;}
+.lsel-num{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+.lsel-name{font-size:14px;font-weight:800;line-height:1.3;}
+.lsel-prog{margin-top:10px;height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.lsel-fill{height:100%;border-radius:99px;background:var(--green);}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg2);border:2px solid var(--green);border-radius:var(--radius-sm);padding:12px 20px;font-size:14px;font-weight:700;color:var(--green);z-index:200;transition:transform .3s,opacity .3s;opacity:0;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* util */
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CONFETTI -->
+<div class="confetti-wrap" id="confetti-wrap"></div>
+
+<!-- CELEBRATION MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <span class="modal-emoji" id="modal-emoji">🎉</span>
+    <div class="modal-title" id="modal-title">Awesome!</div>
+    <div class="modal-sub" id="modal-sub">You completed a topic!</div>
+    <div class="modal-xp" id="modal-xp">+20 XP</div>
+    <button class="btn-green" onclick="closeModal()">Keep going! 🚀</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN: ONBOARDING ===== -->
+<div class="screen active" id="screen-onboard">
+  <div style="font-size:80px;margin-bottom:16px;animation:bounce 1.5s ease-in-out infinite;">🤖</div>
+  <h1 class="onboard-title">Become an<br><span>AI Engineer</span></h1>
+  <p class="onboard-sub">Your Duolingo-style daily learning quest. Complete topics, earn XP, keep your streak alive — and we'll remind you by email if you fall off track.</p>
+  <div class="onboard-form">
+    <input class="inp" id="ob-name" placeholder="Your name" type="text" />
+    <input class="inp" id="ob-email" placeholder="Your email (for streak reminders)" type="email" />
+    <button class="btn-green" onclick="startJourney()">Start My Quest 🚀</button>
+    <button class="btn-ghost" onclick="skipOnboard()">I'll add email later</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN: MAIN (desktop) ===== -->
+<div class="screen" id="screen-main">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo"><span>🤖</span> AI Quest</div>
+    <div class="topbar-stats">
+      <div class="stat-pill"><span class="icon">🔥</span><span class="streak-num" id="top-streak">0</span></div>
+      <div class="stat-pill"><span class="icon">⚡</span><span class="xp-num" id="top-xp">0 XP</span></div>
+      <div class="stat-pill"><span class="icon">❤️</span><span class="hearts" id="top-hearts">5</span></div>
+    </div>
+  </div>
+
+  <div class="main-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-user">
+        <div class="user-name" id="sb-name">Learner</div>
+        <div class="user-email" id="sb-email">No email set</div>
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-label"><span>Level progress</span><span id="sb-xp-label">0 / 200 XP</span></div>
+          <div class="xp-bar"><div class="xp-bar-fill" id="sb-xp-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="level-list" id="sidebar-levels"></div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content" id="main-content">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav">
+    <button class="mobile-nav-btn active" id="mnb-levels" onclick="showMobileScreen('level-select')">
+      <span class="mnb-icon">🗺️</span>Levels
+    </button>
+    <button class="mobile-nav-btn" id="mnb-learn" onclick="showMobileScreen('learn')">
+      <span class="mnb-icon">📚</span>Learn
+    </button>
+    <button class="mobile-nav-btn" id="mnb-profile" onclick="showMobileScreen('profile')">
+      <span class="mnb-icon">👤</span>Profile
+    </button>
+  </div>
+</div>
+
+<!-- ===== SCREEN: MOBILE LEVEL SELECT ===== -->
+<div class="screen" id="screen-level-select" style="display:none;padding:24px 20px 80px;">
+  <h2 style="font-size:22px;font-weight:900;margin-bottom:4px;">Choose a Level</h2>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Tap to start learning</p>
+  <div class="level-select-grid" id="mobile-level-grid"></div>
+</div>
+
+<script>
+// ===================================================
+// DATA
+// ===================================================
+const LEVELS = [
+  {
+    num:1, icon:'⚙️', color:'#6c63ff', bgColor:'rgba(108,99,255,.12)',
+    tag:'Foundation', title:'Engineering Foundations',
+    desc:'The non-negotiable base. Every AI system runs on solid engineering — no shortcuts here.',
+    project:'Build a Python CLI tool that calls a REST API, processes JSON, stores in SQLite, and runs in Docker.',
+    topics:[
+      { name:'Python + Data Stack', why:'Core language + NumPy & Pandas for data wrangling. Python is the lingua franca of AI.', xp:20,
+        resources:[
+          {type:'free',name:'CS50P – Python (Harvard)',plat:'Harvard OpenCourseWare',url:'https://cs50.harvard.edu/python/'},
+          {type:'yt',name:'Python Full Course – freeCodeCamp',plat:'YouTube · 4.5 hrs',url:'https://www.youtube.com/watch?v=rfscVS0vtbw'},
+          {type:'free',name:'Kaggle – Pandas & NumPy Micro-courses',plat:'Kaggle Learn',url:'https://www.kaggle.com/learn'},
+          {type:'doc',name:'NumPy Official Quickstart',plat:'numpy.org',url:'https://numpy.org/doc/stable/user/quickstart.html'},
+          {type:'paid',name:'100 Days of Code Python – Udemy',plat:'Udemy · Angela Yu',url:'https://www.udemy.com/course/100-days-of-code/'},
+        ]},
+      { name:'Math for ML', why:'Linear algebra (vectors/matrices), basic calculus (gradients), and probability. Essential for understanding embeddings and fine-tuning.', xp:25,
+        resources:[
+          {type:'yt',name:'3Blue1Brown – Essence of Linear Algebra',plat:'YouTube · Free',url:'https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab'},
+          {type:'yt',name:'3Blue1Brown – Calculus Series',plat:'YouTube · Free',url:'https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr'},
+          {type:'free',name:'Khan Academy – Probability & Stats',plat:'Khan Academy',url:'https://www.khanacademy.org/math/statistics-probability'},
+          {type:'paid',name:'Mathematics for ML Specialization',plat:'Coursera · Imperial College',url:'https://www.coursera.org/specializations/mathematics-machine-learning'},
+        ]},
+      { name:'Git & GitHub', why:'Version control, branches, PRs. Your code history is your safety net for every project.', xp:15,
+        resources:[
+          {type:'free',name:'Git & GitHub – freeCodeCamp',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=RGOj5yH7evk'},
+          {type:'doc',name:'GitHub Docs – Getting Started',plat:'github.com',url:'https://docs.github.com/en/get-started'},
+          {type:'free',name:'Learn Git Branching (Interactive)',plat:'learngitbranching.js.org',url:'https://learngitbranching.js.org/'},
+        ]},
+      { name:'REST APIs & JSON', why:'All LLM APIs are REST. You\'ll be calling them constantly — understand requests, responses, auth.', xp:15,
+        resources:[
+          {type:'yt',name:'REST API Crash Course – Traversy Media',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=SLwpqD8n3d0'},
+          {type:'free',name:'Postman Learning Center',plat:'postman.com',url:'https://learning.postman.com/'},
+          {type:'doc',name:'Python Requests Library Docs',plat:'requests.readthedocs.io',url:'https://requests.readthedocs.io/en/latest/'},
+        ]},
+      { name:'Docker', why:'Package your AI app so it runs anywhere — local, cloud, CI. Essential for production deployment.', xp:20,
+        resources:[
+          {type:'doc',name:'Docker Getting Started – Official',plat:'docs.docker.com',url:'https://docs.docker.com/get-started/'},
+          {type:'yt',name:'Docker Tutorial for Beginners – TechWorld',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=3c-iBn73dDE'},
+          {type:'free',name:'Play with Docker (Browser Sandbox)',plat:'labs.play-with-docker.com',url:'https://labs.play-with-docker.com/'},
+        ]},
+      { name:'SQL Basics', why:'Query databases, filter data, understand schemas. Every real AI pipeline touches a database.', xp:15,
+        resources:[
+          {type:'free',name:'SQLZoo – Interactive SQL',plat:'sqlzoo.net',url:'https://sqlzoo.net/'},
+          {type:'free',name:'Mode SQL Tutorial',plat:'mode.com',url:'https://mode.com/sql-tutorial/'},
+          {type:'yt',name:'SQL Full Course – freeCodeCamp',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=HXV3zeQKqGY'},
+        ]},
+    ]
+  },
+  {
+    num:2, icon:'🧠', color:'#00d4aa', bgColor:'rgba(0,212,170,.12)',
+    tag:'LLM Core', title:'LLM Fundamentals',
+    desc:'Understand how large language models think, fail, and what you can control as an engineer.',
+    project:'Build a CLI assistant with function calling that answers questions about local files with structured JSON output.',
+    topics:[
+      { name:'Prompt Engineering', why:'System prompts, chain-of-thought, few-shot, structured output. Your primary lever over model behavior.', xp:20,
+        resources:[
+          {type:'free',name:'DeepLearning.AI – Prompt Engineering for Devs',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/'},
+          {type:'doc',name:'Anthropic Prompt Engineering Guide',plat:'docs.anthropic.com',url:'https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview'},
+          {type:'free',name:'LearnPrompting.org – Free Guide',plat:'learnprompting.org',url:'https://learnprompting.org/docs/intro'},
+          {type:'yt',name:'Prompt Engineering – Andrej Karpathy',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=bZQun8Y4L2A'},
+        ]},
+      { name:'Tokens & Context Windows', why:'Understand how LLMs "read" text, token costs, and why 128K context ≠ infinite memory.', xp:15,
+        resources:[
+          {type:'free',name:'OpenAI Tokenizer Tool',plat:'platform.openai.com',url:'https://platform.openai.com/tokenizer'},
+          {type:'doc',name:'Anthropic Context Window Docs',plat:'docs.anthropic.com',url:'https://docs.anthropic.com/en/docs/about-claude/models/overview'},
+          {type:'yt',name:'How LLMs Work – Andrej Karpathy',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=zjkBMFhNj_g'},
+        ]},
+      { name:'OpenAI / Anthropic / Gemini APIs', why:'Call frontier models programmatically. Learn rate limits, error handling, streaming responses.', xp:25,
+        resources:[
+          {type:'doc',name:'OpenAI API Documentation',plat:'platform.openai.com',url:'https://platform.openai.com/docs'},
+          {type:'doc',name:'Anthropic Claude API Docs',plat:'docs.anthropic.com',url:'https://docs.anthropic.com/'},
+          {type:'free',name:'OpenAI Cookbook – Python Examples',plat:'cookbook.openai.com',url:'https://cookbook.openai.com/'},
+          {type:'free',name:'DeepLearning.AI – Building Systems with ChatGPT',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/building-systems-with-chatgpt/'},
+        ]},
+      { name:'Structured Outputs & Pydantic', why:'Force models to return valid JSON/schemas. Critical for reliable, production-ready AI pipelines.', xp:20,
+        resources:[
+          {type:'doc',name:'Pydantic Official Docs',plat:'docs.pydantic.dev',url:'https://docs.pydantic.dev/'},
+          {type:'doc',name:'OpenAI Structured Outputs Guide',plat:'platform.openai.com',url:'https://platform.openai.com/docs/guides/structured-outputs'},
+          {type:'yt',name:'Pydantic AI Tutorial – Patrick Loeber',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=5_CjTqAhyng'},
+        ]},
+      { name:'Function Calling / Tool Use', why:'Give LLMs tools (web search, code execution). This is where LLMs become useful agents.', xp:25,
+        resources:[
+          {type:'doc',name:'OpenAI Function Calling Guide',plat:'platform.openai.com',url:'https://platform.openai.com/docs/guides/function-calling'},
+          {type:'doc',name:'Anthropic Tool Use Docs',plat:'docs.anthropic.com',url:'https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview'},
+          {type:'free',name:'DeepLearning.AI – Functions, Tools & Agents',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/functions-tools-agents-langchain/'},
+        ]},
+      { name:'Basic Evals', why:'Measure if your prompts actually work. LLM-as-judge, simple test suites. Don\'t skip — evals are your compass.', xp:20,
+        resources:[
+          {type:'free',name:'DeepLearning.AI – Evaluating LLM Outputs',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/'},
+          {type:'doc',name:'Braintrust Eval Framework',plat:'braintr.st',url:'https://www.braintrust.dev/docs'},
+          {type:'free',name:'OpenAI Evals GitHub',plat:'github.com/openai',url:'https://github.com/openai/evals'},
+        ]},
+    ]
+  },
+  {
+    num:3, icon:'🔬', color:'#4ecdc4', bgColor:'rgba(78,205,196,.12)',
+    tag:'ML Foundations', title:'ML Foundations',
+    desc:'Understanding how models learn makes everything else click. Core theory with practical tools.',
+    project:'Fine-tune a small Llama model on a domain dataset using QLoRA, track with MLflow, push to HuggingFace Hub.',
+    topics:[
+      { name:'Scikit-learn', why:'Classical ML: regression, classification, clustering. Understand training, validation, and overfitting deeply.', xp:20,
+        resources:[
+          {type:'doc',name:'Scikit-learn User Guide',plat:'scikit-learn.org',url:'https://scikit-learn.org/stable/user_guide.html'},
+          {type:'free',name:'Kaggle – Intro to Machine Learning',plat:'Kaggle Learn · Free',url:'https://www.kaggle.com/learn/intro-to-machine-learning'},
+          {type:'free',name:'Google ML Crash Course',plat:'developers.google.com · Free',url:'https://developers.google.com/machine-learning/crash-course'},
+        ]},
+      { name:'PyTorch Basics', why:'Tensors, autograd, neural net layers. Even if you never train from scratch, you\'ll read PyTorch code constantly.', xp:30,
+        resources:[
+          {type:'doc',name:'PyTorch Official Tutorials',plat:'pytorch.org',url:'https://pytorch.org/tutorials/'},
+          {type:'yt',name:'PyTorch Zero to Mastery – freeCodeCamp',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=V_xro1bcAuA'},
+          {type:'free',name:'fast.ai – Practical Deep Learning',plat:'course.fast.ai · Free',url:'https://course.fast.ai/'},
+          {type:'yt',name:'Neural Nets: Zero to Hero – Karpathy',plat:'YouTube · Free',url:'https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ'},
+        ]},
+      { name:'MLflow & Experiment Tracking', why:'Track what parameters produced what results. Critical hygiene — you\'ll run hundreds of experiments.', xp:20,
+        resources:[
+          {type:'doc',name:'MLflow Official Documentation',plat:'mlflow.org',url:'https://mlflow.org/docs/latest/index.html'},
+          {type:'yt',name:'MLflow Tutorial – Krish Naik',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=ksqyQFuBhbs'},
+          {type:'free',name:'Weights & Biases Free Courses',plat:'wandb.ai',url:'https://www.wandb.courses/'},
+        ]},
+      { name:'Fine-tuning (LoRA / QLoRA)', why:'Adapt a pretrained model to your domain with minimal data & compute. Massive leverage for production AI.', xp:35,
+        resources:[
+          {type:'free',name:'DeepLearning.AI – Finetuning LLMs',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/finetuning-large-language-models/'},
+          {type:'yt',name:'QLoRA Fine-tuning – Maxime Labonne',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=Us5ZFp16PaU'},
+          {type:'free',name:'Hugging Face PEFT Library',plat:'huggingface.co',url:'https://huggingface.co/docs/peft/index'},
+          {type:'doc',name:'Unsloth – Fast Fine-tuning',plat:'github.com/unslothai',url:'https://github.com/unslothai/unsloth'},
+        ]},
+      { name:'Hugging Face Ecosystem', why:'Hub, Transformers, Datasets, Spaces. The GitHub of AI models — you\'ll reference this daily.', xp:25,
+        resources:[
+          {type:'free',name:'Hugging Face NLP Course',plat:'huggingface.co · Free',url:'https://huggingface.co/learn/nlp-course'},
+          {type:'doc',name:'Transformers Documentation',plat:'huggingface.co',url:'https://huggingface.co/docs/transformers/index'},
+          {type:'yt',name:'HuggingFace Crash Course – Patrick Loeber',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=GSt00_-0ncQ'},
+        ]},
+      { name:'Open-source Models (Ollama)', why:'Run Llama/Mistral locally. Reduces API costs, enables private deployments — a must-know skill.', xp:20,
+        resources:[
+          {type:'doc',name:'Ollama Official Docs',plat:'ollama.com',url:'https://ollama.com/'},
+          {type:'yt',name:'Run LLMs Locally with Ollama',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=ZoxJcPkjirs'},
+          {type:'free',name:'LM Studio – Local Model GUI',plat:'lmstudio.ai',url:'https://lmstudio.ai/'},
+        ]},
+    ]
+  },
+  {
+    num:4, icon:'🔍', color:'#ffd166', bgColor:'rgba(255,209,102,.12)',
+    tag:'RAG & Retrieval', title:'RAG & Retrieval Systems',
+    desc:'Give your LLM a memory. RAG is the #1 production AI pattern — master it deeply.',
+    project:'Build a document Q&A system over PDFs with hybrid search, reranking, and a RAGAS evaluation dashboard.',
+    topics:[
+      { name:'Embeddings', why:'Turn text into vectors. The mathematical foundation of semantic search and every RAG system.', xp:25,
+        resources:[
+          {type:'free',name:'DeepLearning.AI – Understanding Embeddings',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/google-cloud-vertex-ai/'},
+          {type:'yt',name:'Word Embeddings Explained – Computerphile',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=gQddtTdmG_8'},
+          {type:'doc',name:'OpenAI Embeddings Guide',plat:'platform.openai.com',url:'https://platform.openai.com/docs/guides/embeddings'},
+          {type:'free',name:'Sentence Transformers Docs',plat:'sbert.net',url:'https://www.sbert.net/'},
+        ]},
+      { name:'Chunking Strategies', why:'Fixed, recursive, semantic chunking. Bad chunking = bad retrieval = bad answers. Details matter.', xp:20,
+        resources:[
+          {type:'free',name:'Chunking Strategies Guide – Greg Kamradt',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=8OJC21T2SL4'},
+          {type:'doc',name:'LangChain Text Splitters Docs',plat:'python.langchain.com',url:'https://python.langchain.com/docs/concepts/text_splitters/'},
+          {type:'free',name:'Chroma RAG Tutorial',plat:'trychroma.com',url:'https://docs.trychroma.com/'},
+        ]},
+      { name:'Vector Databases', why:'Store and search embeddings at scale. Know at least one deeply (Pinecone, Qdrant, or pgvector).', xp:25,
+        resources:[
+          {type:'doc',name:'Qdrant Documentation (Free/Open-source)',plat:'qdrant.tech',url:'https://qdrant.tech/documentation/'},
+          {type:'doc',name:'pgvector GitHub',plat:'github.com/pgvector',url:'https://github.com/pgvector/pgvector'},
+          {type:'free',name:'Pinecone Learning Center',plat:'pinecone.io',url:'https://www.pinecone.io/learn/'},
+          {type:'yt',name:'Vector DBs Explained – Fireship',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=klTvEwg3oJ4'},
+        ]},
+      { name:'Reranking & Hybrid Search', why:'Combine semantic + keyword search, then rerank. This alone can double RAG accuracy.', xp:25,
+        resources:[
+          {type:'free',name:'DeepLearning.AI – Advanced RAG',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/building-and-evaluating-advanced-rag/'},
+          {type:'doc',name:'Cohere Reranking Docs',plat:'cohere.com',url:'https://docs.cohere.com/docs/reranking'},
+          {type:'yt',name:'Hybrid Search Tutorial – Sam Witteveen',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=lYxGYXjfrNI'},
+        ]},
+      { name:'LangChain / LlamaIndex', why:'RAG orchestration frameworks. LlamaIndex for retrieval, LangChain for orchestration — know both.', xp:30,
+        resources:[
+          {type:'doc',name:'LlamaIndex Official Docs',plat:'docs.llamaindex.ai',url:'https://docs.llamaindex.ai/'},
+          {type:'doc',name:'LangChain Python Docs',plat:'python.langchain.com',url:'https://python.langchain.com/docs/'},
+          {type:'free',name:'LlamaIndex Starter Tutorial',plat:'docs.llamaindex.ai · Free',url:'https://docs.llamaindex.ai/en/stable/getting_started/starter_example/'},
+          {type:'paid',name:'RAG, AI Agents & GenAI – Udemy 2026',plat:'Udemy',url:'https://www.udemy.com/course/generative-ai-rag/'},
+        ]},
+      { name:'RAG Evaluation (RAGAS)', why:'Measure faithfulness, relevance, context recall. RAG without evals is guesswork.', xp:20,
+        resources:[
+          {type:'doc',name:'RAGAS Documentation',plat:'docs.ragas.io',url:'https://docs.ragas.io/en/latest/'},
+          {type:'yt',name:'RAGAS RAG Evaluation Tutorial',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=0lhp2OWDNdk'},
+          {type:'free',name:'Arize Phoenix – RAG Tracing',plat:'phoenix.arize.com · Free',url:'https://phoenix.arize.com/'},
+        ]},
+    ]
+  },
+  {
+    num:5, icon:'🤖', color:'#ff9600', bgColor:'rgba(255,150,0,.12)',
+    tag:'Agents', title:'Agents & Orchestration',
+    desc:'Build AI that takes actions, not just answers. Agents are the frontier of production AI in 2026.',
+    project:'Multi-agent research assistant that searches the web, reads PDFs, writes a report, and streams to a FastAPI front-end.',
+    topics:[
+      { name:'LangGraph', why:'Build stateful, graph-based agent workflows. The production standard for complex, reliable agents.', xp:35,
+        resources:[
+          {type:'doc',name:'LangGraph Official Documentation',plat:'langchain-ai.github.io',url:'https://langchain-ai.github.io/langgraph/'},
+          {type:'free',name:'DeepLearning.AI – AI Agents in LangGraph',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/'},
+          {type:'yt',name:'LangGraph Tutorial – LangChain',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=R-o_a6dvzQM'},
+        ]},
+      { name:'FastAPI', why:'Expose your AI as an API. Every production AI product needs a backend layer.', xp:25,
+        resources:[
+          {type:'doc',name:'FastAPI Official Tutorial',plat:'fastapi.tiangolo.com',url:'https://fastapi.tiangolo.com/tutorial/'},
+          {type:'yt',name:'FastAPI Crash Course – Patrick Loeber',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=0sOvCWFmrtA'},
+          {type:'free',name:'Real Python – FastAPI Guide',plat:'realpython.com · Free',url:'https://realpython.com/fastapi-python-web-apis/'},
+        ]},
+      { name:'MCP (Model Context Protocol)', why:'Anthropic\'s protocol — now the industry standard with 97M monthly SDK downloads. Connect agents to any tool.', xp:30,
+        resources:[
+          {type:'doc',name:'MCP Official Documentation',plat:'modelcontextprotocol.io',url:'https://modelcontextprotocol.io/'},
+          {type:'free',name:'Anthropic MCP Quickstart',plat:'docs.anthropic.com · Free',url:'https://docs.anthropic.com/en/docs/agents-and-tools/mcp'},
+          {type:'yt',name:'MCP Explained – Fireship',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=7j_NE6Pjv-E'},
+        ]},
+      { name:'Multi-agent Systems (CrewAI)', why:'Orchestrate multiple specialized agents working together. Behind every complex AI pipeline.', xp:30,
+        resources:[
+          {type:'doc',name:'CrewAI Documentation',plat:'docs.crewai.com',url:'https://docs.crewai.com/'},
+          {type:'free',name:'DeepLearning.AI – Multi AI Agent Systems',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/multi-ai-agent-systems-with-crewai/'},
+          {type:'yt',name:'CrewAI Tutorial – Brandon Hancock',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=tnejrr-0a94'},
+        ]},
+      { name:'Streaming & WebSockets', why:'Stream LLM tokens to your UI in real-time. Users hate waiting — streaming is expected in every AI product.', xp:20,
+        resources:[
+          {type:'doc',name:'OpenAI Streaming Guide',plat:'platform.openai.com',url:'https://platform.openai.com/docs/api-reference/streaming'},
+          {type:'doc',name:'FastAPI WebSockets Docs',plat:'fastapi.tiangolo.com',url:'https://fastapi.tiangolo.com/advanced/websockets/'},
+          {type:'yt',name:'LLM Streaming with Python – Patrick Loeber',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=E9pCZmMUBHs'},
+        ]},
+      { name:'Multimodal AI', why:'Vision APIs, image analysis, audio transcription. Modern AI apps are not text-only — 2026 expects multimodal skills.', xp:25,
+        resources:[
+          {type:'doc',name:'OpenAI Vision Guide',plat:'platform.openai.com',url:'https://platform.openai.com/docs/guides/vision'},
+          {type:'free',name:'DeepLearning.AI – Multimodal RAG',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/building-multimodal-search-and-rag/'},
+          {type:'doc',name:'Whisper (Speech-to-Text) by OpenAI',plat:'github.com/openai',url:'https://github.com/openai/whisper'},
+        ]},
+    ]
+  },
+  {
+    num:6, icon:'📊', color:'#ff6b6b', bgColor:'rgba(255,107,107,.12)',
+    tag:'Ops & Evals', title:'Ops & Evaluation',
+    desc:'If you can\'t measure it, you can\'t improve it. Observability separates amateurs from pros.',
+    project:'Add full observability + LLM-as-judge evals to your RAG project. Deploy to Cloud Run with a CI eval gate.',
+    topics:[
+      { name:'LangSmith & Observability', why:'Trace every LLM call, see token usage, latency, errors. You are completely blind without this in production.', xp:25,
+        resources:[
+          {type:'doc',name:'LangSmith Documentation',plat:'docs.smith.langchain.com · Free tier',url:'https://docs.smith.langchain.com/'},
+          {type:'free',name:'Arize Phoenix (Open-source Tracing)',plat:'phoenix.arize.com · Free',url:'https://phoenix.arize.com/'},
+          {type:'yt',name:'LangSmith Tutorial – LangChain',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=Hab2CV_0hpQ'},
+        ]},
+      { name:'LLM-as-Judge', why:'Use a strong LLM to evaluate your weaker LLM\'s outputs at scale. The industry-standard eval pattern.', xp:25,
+        resources:[
+          {type:'free',name:'DeepLearning.AI – Automated Testing for LLMs',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/automated-testing-llmops/'},
+          {type:'doc',name:'Braintrust LLM-as-judge Guide',plat:'braintr.st',url:'https://www.braintrust.dev/docs/guides/llm-as-judge'},
+          {type:'yt',name:'LLM Evaluation Methods 2025',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=DR_-QDBBtFg'},
+        ]},
+      { name:'Tracing & Cost Monitoring', why:'OpenTelemetry for AI, cost dashboards, latency P95s. Run AI like production software, not a demo.', xp:20,
+        resources:[
+          {type:'free',name:'Helicone – LLM Observability (Free tier)',plat:'helicone.ai',url:'https://www.helicone.ai/'},
+          {type:'doc',name:'OpenTelemetry Python Docs',plat:'opentelemetry.io',url:'https://opentelemetry.io/docs/languages/python/'},
+          {type:'free',name:'LiteLLM – Unified LLM Gateway',plat:'litellm.ai · Free',url:'https://docs.litellm.ai/'},
+        ]},
+      { name:'Cost & Latency Tuning', why:'Know your $/1K tokens. Use caching (semantic cache), model routing, and prompt compression to cut costs.', xp:20,
+        resources:[
+          {type:'free',name:'GPTCache – Semantic Caching (Free)',plat:'github.com/zilliztech',url:'https://github.com/zilliztech/GPTCache'},
+          {type:'doc',name:'LiteLLM Model Router',plat:'litellm.ai',url:'https://docs.litellm.ai/docs/routing'},
+          {type:'yt',name:'LLM Cost Optimization Strategies',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=ahnGLM-RC1Y'},
+        ]},
+      { name:'Cloud Deployment (AWS/GCP)', why:'Deploy to AWS/GCP. EC2, Cloud Run, SageMaker basics. Missing from most self-study roadmaps — don\'t skip.', xp:30,
+        resources:[
+          {type:'free',name:'AWS Free Tier – Getting Started',plat:'aws.amazon.com · Free tier',url:'https://aws.amazon.com/free/'},
+          {type:'free',name:'GCP Cloud Run Quickstart',plat:'cloud.google.com · Free tier',url:'https://cloud.google.com/run/docs/quickstarts'},
+          {type:'yt',name:'Deploy AI App on AWS – Krish Naik',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=0eMU23VyzR8'},
+          {type:'free',name:'Modal.com – Easy GPU Serverless',plat:'modal.com · Free tier',url:'https://modal.com/'},
+        ]},
+    ]
+  },
+  {
+    num:7, icon:'🛡️', color:'#c77dff', bgColor:'rgba(199,125,255,.12)',
+    tag:'Safety', title:'Safety & Responsibility',
+    desc:'Non-negotiable in 2026. Regulators, enterprises, and users all demand responsible AI.',
+    project:'Red-team your RAG + agent system. Write an AI System Card. Add guardrails and a PII scrubbing layer.',
+    topics:[
+      { name:'Guardrails & Filters', why:'Validate, sanitize, and filter LLM inputs and outputs. Prevent jailbreaks and hallucination passthrough.', xp:25,
+        resources:[
+          {type:'doc',name:'Guardrails AI Documentation',plat:'guardrailsai.com · Free',url:'https://docs.guardrailsai.com/'},
+          {type:'free',name:'NVIDIA NeMo Guardrails (Free)',plat:'github.com/NVIDIA',url:'https://github.com/NVIDIA/NeMo-Guardrails'},
+          {type:'free',name:'LlamaGuard – Meta (Free, Open)',plat:'huggingface.co',url:'https://huggingface.co/meta-llama/LlamaGuard-7b'},
+        ]},
+      { name:'EU AI Act & GDPR', why:'Know which risk tier your system falls in. High-risk AI has strict documentation requirements enforced from 2025.', xp:20,
+        resources:[
+          {type:'free',name:'EU AI Act – Official Text',plat:'eur-lex.europa.eu · Free',url:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689'},
+          {type:'free',name:'Future of Life – AI Act Guide',plat:'futureoflife.org · Free',url:'https://futureoflife.org/eu-ai-act/'},
+          {type:'yt',name:'EU AI Act Explained Simply',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=ZzCX5oD-U8c'},
+        ]},
+      { name:'Red Teaming', why:'Systematically try to break your own system. Adversarial prompts, prompt injection, indirect attacks.', xp:30,
+        resources:[
+          {type:'free',name:'DeepLearning.AI – Red Teaming LLMs',plat:'deeplearning.ai · Free',url:'https://www.deeplearning.ai/short-courses/red-teaming-llm-applications/'},
+          {type:'free',name:'Garak – LLM Vulnerability Scanner',plat:'github.com/leondz · Free',url:'https://github.com/leondz/garak'},
+          {type:'doc',name:'OWASP Top 10 for LLM Apps',plat:'owasp.org · Free',url:'https://owasp.org/www-project-top-10-for-large-language-model-applications/'},
+        ]},
+      { name:'PII & Data Handling', why:'Never send personal data to third-party APIs without consent. Know data residency rules and safe data practices.', xp:20,
+        resources:[
+          {type:'free',name:'Microsoft Presidio – PII Detection (Free)',plat:'github.com/microsoft',url:'https://github.com/microsoft/presidio'},
+          {type:'free',name:'Anthropic Data Privacy Guide',plat:'docs.anthropic.com · Free',url:'https://docs.anthropic.com/en/api/getting-started'},
+          {type:'yt',name:'Data Privacy for AI Engineers',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=_X5ErjscZTE'},
+        ]},
+      { name:'Responsible AI Frameworks', why:'Microsoft RAI, Anthropic\'s RSP, Constitutional AI. Understand the ethical landscape you\'re building in.', xp:20,
+        resources:[
+          {type:'free',name:'All Tech is Human – 5 Free RAI Courses',plat:'alltechishuman.org · Free',url:'https://alltechishuman.org/rai-courses'},
+          {type:'free',name:'NIST AI Risk Management Framework',plat:'nist.gov · Free',url:'https://www.nist.gov/artificial-intelligence'},
+          {type:'free',name:'Anthropic Responsible Scaling Policy',plat:'anthropic.com · Free',url:'https://www.anthropic.com/rsp-updates'},
+        ]},
+    ]
+  },
+  {
+    num:8, icon:'🚀', color:'#ff9a3c', bgColor:'rgba(255,154,60,.12)',
+    tag:'Production', title:'Production AI Engineer',
+    desc:'Ship AI systems that scale, survive, and keep improving. The most valued tier in the job market.',
+    project:'Ship a complete AI product with RAG + agents + observability + evals + CI/CD. Document it as your portfolio.',
+    topics:[
+      { name:'End-to-End System Design', why:'Design for scale from the start: async queues, caching layers, graceful degradation, fallback models.', xp:35,
+        resources:[
+          {type:'free',name:'Made With ML – Production ML',plat:'madewithml.com · Free',url:'https://madewithml.com/'},
+          {type:'free',name:'Full Stack Deep Learning 2022',plat:'fullstackdeeplearning.com · Free',url:'https://fullstackdeeplearning.com/course/2022/'},
+          {type:'book',name:'Designing ML Systems – Chip Huyen',plat:'O\'Reilly Book',url:'https://www.oreilly.com/library/view/designing-machine-learning/9781098107963/'},
+        ]},
+      { name:'Model Routing & Caching', why:'Route simple queries to cheaper models, complex ones to frontier. Semantic caching cuts costs 40%+.', xp:25,
+        resources:[
+          {type:'free',name:'LiteLLM Router (Free/Open-source)',plat:'litellm.ai',url:'https://docs.litellm.ai/docs/routing'},
+          {type:'free',name:'GPTCache Semantic Cache',plat:'github.com/zilliztech',url:'https://github.com/zilliztech/GPTCache'},
+          {type:'yt',name:'LLM Routing Strategies',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=ycR-XRaLtaI'},
+        ]},
+      { name:'Monitoring in Production', why:'Drift detection, hallucination rate monitoring, business metric dashboards. AI degrades silently — monitor everything.', xp:25,
+        resources:[
+          {type:'free',name:'Evidently AI – ML Monitoring (Free)',plat:'evidentlyai.com',url:'https://www.evidentlyai.com/'},
+          {type:'free',name:'WhyLabs – AI Observability (Free tier)',plat:'whylabs.ai',url:'https://whylabs.ai/'},
+          {type:'free',name:'MLOps Community Resources',plat:'mlops.community · Free',url:'https://mlops.community/'},
+        ]},
+      { name:'CI/CD for AI (Continuous Evals)', why:'Every code change triggers an eval run. Regression in quality = failed deployment. Non-negotiable.', xp:30,
+        resources:[
+          {type:'free',name:'GitHub Actions – Free CI/CD',plat:'github.com · Free',url:'https://docs.github.com/en/actions'},
+          {type:'free',name:'Braintrust CI Integration',plat:'braintr.st',url:'https://www.braintrust.dev/docs/guides/ci-cd'},
+          {type:'yt',name:'MLOps CI/CD for LLMs',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=NgWujOrCZFo'},
+        ]},
+      { name:'Scaling & Reliability', why:'Horizontal scaling, rate limit handling, retry logic, circuit breakers. Build AI systems with real SLAs.', xp:30,
+        resources:[
+          {type:'free',name:'Tenacity – Python Retry Library',plat:'github.com/jd · Free',url:'https://github.com/jd/tenacity'},
+          {type:'doc',name:'AWS Auto Scaling Docs',plat:'aws.amazon.com',url:'https://aws.amazon.com/autoscaling/'},
+          {type:'free',name:'The Pragmatic Engineer – AI Infra',plat:'newsletter.pragmaticengineer.com',url:'https://newsletter.pragmaticengineer.com/'},
+        ]},
+      { name:'DSPy – Prompt Optimization', why:'Programmatically optimize prompts using labeled data. Replaces manual prompt tuning at scale.', xp:25,
+        resources:[
+          {type:'doc',name:'DSPy Official Documentation',plat:'dspy.ai · Free',url:'https://dspy.ai/'},
+          {type:'yt',name:'DSPy Tutorial – Connor Shorten',plat:'YouTube · Free',url:'https://www.youtube.com/watch?v=CDung1LMpvg'},
+          {type:'free',name:'DSPy GitHub + Notebooks',plat:'github.com/stanfordnlp',url:'https://github.com/stanfordnlp/dspy'},
+        ]},
+    ]
+  },
+];
+
+// ===================================================
+// STATE
+// ===================================================
+let state = {
+  name:'', email:'',
+  xp:0, streak:0, hearts:5,
+  lastActivity: null,
+  completedTopics: {}, // 'L1T0' etc.
+  currentLevel: 1,
+  notifications: true,
+};
+
+function saveState(){ localStorage.setItem('aiq_state', JSON.stringify(state)); }
+function loadState(){
+  const s = localStorage.getItem('aiq_state');
+  if(s) state = {...state, ...JSON.parse(s)};
+}
+function getKey(l,t){ return `L${l}T${t}`; }
+function isDone(l,t){ return !!state.completedTopics[getKey(l,t)]; }
+
+function levelProgress(lIdx){
+  const lvl = LEVELS[lIdx];
+  const done = lvl.topics.filter((_,ti) => isDone(lIdx+1, ti)).length;
+  return {done, total:lvl.topics.length, pct: Math.round(done/lvl.topics.length*100)};
+}
+function totalXP(){
+  let x=0;
+  LEVELS.forEach((lvl,li) => lvl.topics.forEach((_,ti) => {
+    if(isDone(li+1,ti)) x += lvl.topics[ti].xp;
+  }));
+  return x;
+}
+
+// ===================================================
+// STREAK CHECK
+// ===================================================
+function checkStreak(){
+  const today = new Date().toDateString();
+  const last = state.lastActivity;
+  if(!last){ state.streak=0; return; }
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  if(last===today) return; // already did something today
+  if(last===yesterday){ /* streak alive, will increment on next activity */ return; }
+  // missed a day
+  state.streak = 0;
+  if(state.email && state.notifications){
+    scheduleEmailReminder();
+  }
+}
+
+function markActivity(){
+  const today = new Date().toDateString();
+  const last = state.lastActivity;
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  if(last === yesterday) state.streak = (state.streak||0)+1;
+  else if(last !== today) state.streak = (state.streak===0||!last) ? 1 : state.streak;
+  state.lastActivity = today;
+}
+
+// ===================================================
+// EMAIL REMINDER (mailto fallback)
+// ===================================================
+function scheduleEmailReminder(){
+  if(!state.email) return;
+  // In a real app you'd call a backend; here we use mailto as a demo
+  const sub = encodeURIComponent('🔥 Your AI Quest streak is at risk!');
+  const body = encodeURIComponent(`Hey ${state.name||'Learner'}!\n\nYou missed your AI Quest session today. Your streak might reset!\n\nGet back on track: open AI Quest and complete at least one topic.\n\nYou've got this! 🚀\n\n– AI Quest`);
+  // Store reminder intent
+  localStorage.setItem('aiq_reminder_pending', JSON.stringify({to: state.email, sub, body}));
+}
+
+function sendTestEmail(){
+  const email = state.email || document.getElementById('email-inp-main')?.value;
+  if(!email){ showToast('⚠️ Enter your email first'); return; }
+  if(state.email !== email) { state.email = email; saveState(); }
+  const sub = encodeURIComponent('🤖 AI Quest – Your Daily Reminder');
+  const body = encodeURIComponent(`Hey ${state.name||'Learner'}! 👋\n\nThis is your daily AI Quest reminder.\nYou have ${totalXP()} XP so far — keep building!\n\nToday's goal: Complete at least 1 topic.\n\nAI Quest 🚀`);
+  window.open(`mailto:${email}?subject=${sub}&body=${body}`);
+  showToast('📧 Email reminder opened!');
+  state.notifications = true; saveState();
+}
+
+// ===================================================
+// ONBOARDING
+// ===================================================
+function startJourney(){
+  const name = document.getElementById('ob-name').value.trim();
+  const email = document.getElementById('ob-email').value.trim();
+  if(!name){ document.getElementById('ob-name').focus(); showToast('Enter your name!'); return; }
+  state.name = name;
+  state.email = email;
+  state.xp = 0; state.streak = 0; state.hearts = 5;
+  saveState();
+  showMainScreen();
+}
+function skipOnboard(){
+  const name = document.getElementById('ob-name').value.trim() || 'Learner';
+  state.name = name;
+  saveState();
+  showMainScreen();
+}
+
+// ===================================================
+// NAVIGATION
+// ===================================================
+function showMainScreen(){
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById('screen-main').style.display='block';
+  renderAll();
+}
+function showMobileScreen(which){
+  // toggle mobile nav
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
+  if(which==='level-select'){
+    document.getElementById('mnb-levels').classList.add('active');
+    document.getElementById('screen-level-select').style.display='block';
+    document.getElementById('screen-main').querySelector('.content').style.display='none';
+    renderMobileGrid();
+  } else if(which==='learn'){
+    document.getElementById('mnb-learn').classList.add('active');
+    document.getElementById('screen-level-select').style.display='none';
+    document.getElementById('screen-main').querySelector('.content').style.display='block';
+  } else {
+    document.getElementById('mnb-profile').classList.add('active');
+    document.getElementById('screen-level-select').style.display='none';
+    document.getElementById('screen-main').querySelector('.content').style.display='block';
+  }
+}
+
+// ===================================================
+// RENDER
+// ===================================================
+function renderAll(){
+  state.xp = totalXP();
+  renderTopbar();
+  renderSidebar();
+  renderContent(state.currentLevel-1);
+}
+
+function renderTopbar(){
+  document.getElementById('top-streak').textContent = state.streak;
+  document.getElementById('top-xp').textContent = state.xp+' XP';
+  document.getElementById('top-hearts').textContent = state.hearts;
+}
+
+function renderSidebar(){
+  document.getElementById('sb-name').textContent = state.name || 'Learner';
+  document.getElementById('sb-email').textContent = state.email || 'No email — add one below';
+  const xpLevel = Math.floor(state.xp/200);
+  const xpRem = state.xp % 200;
+  document.getElementById('sb-xp-label').textContent = `${state.xp} XP (Level ${xpLevel+1})`;
+  document.getElementById('sb-xp-bar').style.width = (xpRem/200*100)+'%';
+
+  const list = document.getElementById('sidebar-levels');
+  list.innerHTML = LEVELS.map((lvl,i)=>{
+    const p = levelProgress(i);
+    const isActive = state.currentLevel === i+1;
+    let badge = '';
+    if(p.pct===100) badge = '<span class="lb-badge badge-done">✓ Done</span>';
+    else if(p.pct>0) badge = `<span class="lb-badge badge-pct">${p.pct}%</span>`;
+    return `<button class="level-btn${isActive?' active':''}" onclick="selectLevel(${i})">
+      <span class="lb-icon">${lvl.icon}</span>
+      <span class="lb-name">L${lvl.num}: ${lvl.title.split(' ').slice(0,2).join(' ')}</span>
+      ${badge}
+    </button>`;
+  }).join('');
+}
+
+function renderMobileGrid(){
+  const grid = document.getElementById('mobile-level-grid');
+  grid.innerHTML = LEVELS.map((lvl,i)=>{
+    const p = levelProgress(i);
+    return `<div class="lsel-card" onclick="selectLevel(${i});showMobileScreen('learn')">
+      <div class="lsel-icon">${lvl.icon}</div>
+      <div class="lsel-num">Level ${lvl.num}</div>
+      <div class="lsel-name">${lvl.title}</div>
+      <div class="lsel-prog"><div class="lsel-fill" style="width:${p.pct}%;background:${lvl.color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function selectLevel(i){
+  state.currentLevel = i+1;
+  saveState();
+  renderAll();
+}
+
+function renderContent(lIdx){
+  const lvl = LEVELS[lIdx];
+  const p = levelProgress(lIdx);
+  const content = document.getElementById('main-content');
+
+  const typeColors = {free:'rb-free',paid:'rb-paid',book:'rb-book',yt:'rb-yt',doc:'rb-doc'};
+  const typeLabels = {free:'FREE',paid:'PAID',book:'BOOK',yt:'VIDEO',doc:'DOCS'};
+
+  const topicsHTML = lvl.topics.map((topic,ti)=>{
+    const done = isDone(lIdx+1, ti);
+    const resHTML = topic.resources.map(r=>`
+      <a class="res-link" href="${r.url}" target="_blank" rel="noopener">
+        <span class="res-badge ${typeColors[r.type]||'rb-free'}">${typeLabels[r.type]||'FREE'}</span>
+        <div class="res-text">
+          <div class="res-name">${r.name}</div>
+          <div class="res-plat">${r.plat}</div>
+        </div>
+      </a>`).join('');
+
+    return `<div class="topic-card${done?' done':''}" id="tc-${lIdx}-${ti}">
+      <div class="tc-header" onclick="toggleTopic(${lIdx},${ti})">
+        <div class="tc-check${done?' checked':''}">${done?'✓':''}</div>
+        <div class="tc-info">
+          <div class="tc-name">${done?'<s style=opacity:.5>':''} ${topic.name} ${done?'</s>':''}</div>
+          <div class="tc-why">${topic.why.substring(0,90)}…</div>
+        </div>
+        <div class="tc-xp">+${topic.xp} XP</div>
+        <div class="tc-expand">▾</div>
+      </div>
+      <div class="tc-body">
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;">${topic.why}</p>
+        <div class="section-title">Resources</div>
+        <div class="res-grid">${resHTML}</div>
+        <button class="task-btn${done?' done-btn':''}" onclick="completeTopic(${lIdx},${ti},event)">
+          ${done ? '✓ Completed — Mark as not done' : `✅ Mark as Complete (+${topic.xp} XP)`}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  content.innerHTML = `
+    <div class="level-header-card" style="background:${lvl.bgColor};border:1.5px solid ${lvl.color}30;color:${lvl.color};">
+      <div class="lh-tag">${lvl.icon} Level ${lvl.num} · ${lvl.tag}</div>
+      <div class="lh-title" style="color:var(--text)">${lvl.title}</div>
+      <div class="lh-desc" style="color:var(--muted)">${lvl.desc}</div>
+      <div class="lh-meta">
+        <span class="lh-chip">${lvl.topics.length} topics</span>
+        <span class="lh-chip">${lvl.topics.reduce((a,t)=>a+t.xp,0)} XP available</span>
+        <span class="lh-chip">${p.done}/${p.total} done</span>
+      </div>
+      <div class="progress-row">
+        <div class="prog-bar"><div class="prog-fill" style="width:${p.pct}%"></div></div>
+        <div class="prog-label" style="color:${lvl.color}">${p.pct}%</div>
+      </div>
+    </div>
+
+    <div class="email-box">
+      <div class="email-box-title">🔥 Streak Reminder – Never miss a day</div>
+      <div class="email-row">
+        <input class="email-inp" id="email-inp-main" type="email" placeholder="${state.email||'your@email.com'}" value="${state.email||''}">
+        <button class="btn-orange" onclick="sendTestEmail()">Send Reminder 📧</button>
+      </div>
+      <div class="email-note">We'll send you a reminder email if you miss a day. Click "Send Reminder" to test it — it opens your mail app with a pre-filled message. Your current streak: <b style="color:var(--orange)">${state.streak} 🔥</b></div>
+    </div>
+
+    <div class="topics-section">
+      <div class="section-title">Today's Topics</div>
+      ${topicsHTML}
+    </div>
+
+    <div class="project-box">
+      <div class="project-icon">🎯</div>
+      <div class="project-info">
+        <div class="project-label">Level ${lvl.num} Capstone Project</div>
+        <div class="project-title">${lvl.project}</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      ${lIdx > 0 ? `<button class="btn-ghost" style="flex:1;min-width:120px;padding:12px" onclick="selectLevel(${lIdx-1})">← Level ${lIdx}</button>` : ''}
+      ${lIdx < LEVELS.length-1 ? `<button class="btn-green" style="flex:2;min-width:160px" onclick="selectLevel(${lIdx+1})">Level ${lIdx+2}: ${LEVELS[lIdx+1].title} →</button>` : '<div style="flex:1;background:var(--green-bg);border-radius:var(--radius-sm);padding:14px;text-align:center;font-weight:800;color:var(--green)">🏆 You reached the end! Build your portfolio.</div>'}
+    </div>`;
+}
+
+// ===================================================
+// TOPIC INTERACTIONS
+// ===================================================
+function toggleTopic(lIdx, tIdx){
+  const card = document.getElementById(`tc-${lIdx}-${tIdx}`);
+  card.classList.toggle('open');
+}
+
+const CELEBRATIONS = [
+  {emoji:'🎉', title:'Nailed it!', sub:'Another topic crushed. You\'re on fire!'},
+  {emoji:'🚀', title:'Level up!', sub:'Knowledge unlocked. Keep the momentum going!'},
+  {emoji:'⚡', title:'Electrifying!', sub:'You\'re building real skills. Proud of you!'},
+  {emoji:'🏆', title:'Champion!', sub:'That\'s the spirit of a true AI Engineer.'},
+  {emoji:'🧠', title:'Big brain!', sub:'Your neural network is growing stronger!'},
+  {emoji:'💪', title:'Unstoppable!', sub:'One topic at a time, you\'re getting there.'},
+  {emoji:'🌟', title:'Shining!', sub:'Stars only rise. Keep going!'},
+  {emoji:'🔥', title:'On fire!', sub:'Streak protected. Daily mission: complete!'},
+];
+
+function completeTopic(lIdx, tIdx, evt){
+  evt.stopPropagation();
+  const key = getKey(lIdx+1, tIdx);
+  const wasDone = isDone(lIdx+1, tIdx);
+  const xpAmt = LEVELS[lIdx].topics[tIdx].xp;
+
+  if(wasDone){
+    delete state.completedTopics[key];
+    state.xp = Math.max(0, state.xp - xpAmt);
+    showToast('↩ Marked as not done');
+  } else {
+    state.completedTopics[key] = true;
+    state.xp += xpAmt;
+    markActivity();
+    showToast(`+${xpAmt} XP earned! 🎯`);
+    const c = CELEBRATIONS[Math.floor(Math.random()*CELEBRATIONS.length)];
+    showModal(c.emoji, c.title, c.sub, '+'+xpAmt+' XP');
+    spawnConfetti();
+  }
+  saveState();
+  renderAll();
+}
+
+// ===================================================
+// MODAL & CONFETTI
+// ===================================================
+function showModal(emoji, title, sub, xp){
+  document.getElementById('modal-emoji').textContent = emoji;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-sub').textContent = sub;
+  document.getElementById('modal-xp').textContent = xp;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+function spawnConfetti(){
+  const wrap = document.getElementById('confetti-wrap');
+  wrap.innerHTML = '';
+  const colors = ['#58cc02','#6c63ff','#ffd166','#ff6b6b','#00d4aa','#ff9600','#4ecdc4'];
+  for(let i=0;i<55;i++){
+    const el = document.createElement('div');
+    const size = 6+Math.random()*8;
+    el.style.cssText = `
+      position:absolute;
+      left:${Math.random()*100}%;
+      top:-10px;
+      width:${size}px;
+      height:${size*0.6}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:2px;
+      transform:rotate(${Math.random()*360}deg);
+      animation: fall ${1.5+Math.random()*1.5}s ease-in ${Math.random()*0.5}s forwards;
+    `;
+    wrap.appendChild(el);
+  }
+  const style = document.createElement('style');
+  style.textContent = `@keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:0;}}`;
+  wrap.appendChild(style);
+  setTimeout(()=>wrap.innerHTML='', 3500);
+}
+
+// ===================================================
+// TOAST
+// ===================================================
+function showToast(msg, dur=2400){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+// ===================================================
+// INIT
+// ===================================================
+loadState();
+checkStreak();
+if(state.name){
+  showMainScreen();
+} else {
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById('screen-onboard').style.display='flex';
+}
+</script>
+</body>
+</html>
